@@ -1,0 +1,27 @@
+FROM debian:bullseye
+
+
+RUN apt-get update && apt-get install -y \
+    mariadb-server \
+    mariadb-client \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/mysqld \
+    && chown -R mysql:mysql /run/mysqld \
+    && chown -R mysql:mysql /var/lib/mysql
+
+    
+WORKDIR /srcs
+
+
+COPY ./tools/conf /etc/mysql/my.conf
+COPY ./tools/init.sh /srcs/
+
+
+RUN chmod +x /srcs/init.sh
+
+EXPOSE 3306
+
+# CMD [ "tail", "-f", "/dev/null" ]
+
+CMD [ "/srcs/init.sh" ]
