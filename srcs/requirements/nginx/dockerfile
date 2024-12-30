@@ -25,6 +25,8 @@ RUN openssl x509 -req -days 365 \
 
 COPY ./tools/server.conf /etc/nginx/conf.d/my.conf
 
-EXPOSE 443
-    
-ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
+COPY ./tools/init.sh /srcs/
+RUN chmod +x init.sh
+
+# CMD [ "tail", "-f", "/dev/null" ]
+CMD [ "bash", "-c", "./init.sh;" ]

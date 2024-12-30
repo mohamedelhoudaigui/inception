@@ -1,4 +1,14 @@
-version: '3'
+volumes:
+  mariadb-volume:
+    name: "mariadb-volume"
+
+  wordpress-volume:
+    name: "wordpress-volume"
+
+networks:
+  inception:
+    name: inception
+
 
 services:
   nginx:
@@ -11,8 +21,15 @@ services:
       - "8888:443"
     volumes:
       - wordpress-volume:/srcs/files
+    depends_on:
+      - wordpress
+    restart: always
+    networks:
+      - inception
 
   mariadb:
+    env_file:
+      - .env
     container_name: mariadb
     build: ./requirements/mariadb
     image: mariadb
@@ -20,8 +37,18 @@ services:
       - 3333:3306
     volumes:
       - mariadb-volume:/var/lib/mysql
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    restart: always
+    networks:
+      - inception
 
   wordpress:
+    env_file:
+      - .env
     container_name: wordpress
     build: ./requirements/wordpress
     image: wordpress
@@ -29,19 +56,7 @@ services:
       - 9999:9000
     volumes:
       - wordpress-volume:/srcs/wp-files
+    restart: always
+    networks:
+      - inception
 
-
-volumes:
-  mariadb-volume:
-    # name:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /Users/mel-houd/data/db-volume
-  wordpress-volume:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /Users/mel-houd/data/wordpress-volume

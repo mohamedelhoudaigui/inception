@@ -3,20 +3,24 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y \
     php \
     php-fpm \
-    curl
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /srcs
 
-COPY ./tools/* /srcs/
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar && \
-    mv wp-cli.phar /usr/local/bin/wp && \
-    mkdir -p /run/php && \
-    mkdir -p /var/log/php-fpm
+chmod +x wp-cli.phar && \
+mv wp-cli.phar /usr/local/bin/wp && \
+mkdir -p /run/php && \
+mkdir -p /var/log/php-fpm
 
-RUN wp core download --allow-root 
-    
-EXPOSE 9000
+RUN wp core download --allow-root
 
-ENTRYPOINT [ "php-fpm7.4" ,"-R" ,"-F" ,"-y", "/srcs/php-fpm.conf" ] 
+COPY ./tools/* /srcs/
+RUN chmod +x ./init.sh
+
+
+# CMD [ "bash", "-c", "./init.sh;" ]
+CMD [ "tail", "-f", "/dev/null" ]
+

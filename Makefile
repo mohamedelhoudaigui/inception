@@ -9,7 +9,7 @@ BASE = docker-compose -p $(PROJECT) -f $(COMPOSE_PATH)
 ############################################################
 
 up: down
-	$(BASE) up -d --remove-orphans
+	$(BASE) up --build -d --remove-orphans
 
 build: down
 	$(BASE) build
