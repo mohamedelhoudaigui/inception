@@ -6,27 +6,27 @@ RUN apt-get update && apt-get install -y \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /srcs
+WORKDIR /var/www/html
 
-RUN mkdir keys files
+RUN mkdir /keys
 
 # gen private key
-RUN openssl genpkey -algorithm RSA -out /srcs/keys/private.key
+RUN openssl genpkey -algorithm RSA -out /keys/private.key
 
 # gen CSR with subject information
-RUN openssl req -new -key /srcs/keys/private.key -out /srcs/keys/cert.csr \
+RUN openssl req -new -key /keys/private.key -out /keys/cert.csr \
 -subj "/C=/ST=/L=City/O=/OU=/CN="
 
 # gen self-signed certificate
 RUN openssl x509 -req -days 365 \
--in /srcs/keys/cert.csr \
--signkey /srcs/keys/private.key \
--out /srcs/keys/cert.crt
+-in /keys/cert.csr \
+-signkey /keys/private.key \
+-out /keys/cert.crt
 
 COPY ./tools/server.conf /etc/nginx/conf.d/my.conf
 
-COPY ./tools/init.sh /srcs/
-RUN chmod +x init.sh
+COPY ./tools/init.sh /keys
+RUN chmod +x /keys/init.sh
 
 # CMD [ "tail", "-f", "/dev/null" ]
-CMD [ "bash", "-c", "./init.sh;" ]
+CMD [ "bash", "-c", "/keys/init.sh;" ]

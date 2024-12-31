@@ -1,11 +1,10 @@
 #!/bin/sh
-set -e #if any command exited with a non zero value the script will exit
 
 mysqld_safe &
 
-until mysql -e "SELECT 1" >/dev/null 2>&1; do
-    sleep 1
-done
+sleep 3
+
+echo 'staring mariadb 1...'
 
 # Check if database exists
 DB_EXISTS=$(mysql -e "SHOW DATABASES LIKE '${DB_NAME}';" | grep ${DB_NAME})
@@ -20,5 +19,7 @@ EOF
 fi
 
 mysqladmin shutdown
+
+echo 'staring mariadb 2...'
 
 exec mysqld_safe

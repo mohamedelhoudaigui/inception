@@ -9,7 +9,6 @@ networks:
   inception:
     name: inception
 
-
 services:
   nginx:
     container_name: nginx
@@ -20,10 +19,9 @@ services:
     ports:
       - "8888:443"
     volumes:
-      - wordpress-volume:/srcs/files
+      - wordpress-volume:/var/www/html
     depends_on:
       - wordpress
-    restart: always
     networks:
       - inception
 
@@ -42,7 +40,6 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    restart: always
     networks:
       - inception
 
@@ -55,8 +52,9 @@ services:
     ports:
       - 9999:9000
     volumes:
-      - wordpress-volume:/srcs/wp-files
-    restart: always
+      - wordpress-volume:/var/www/html
+    depends_on:
+      - mariadb
     networks:
       - inception
 
