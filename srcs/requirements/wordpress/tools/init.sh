@@ -1,15 +1,21 @@
 #!/bin/sh
 
-echo 'moved the config'
-mv /srcs/wp-config.php /var/www/html/wp-config.php
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+mv wp-cli.phar /usr/local/bin/wp
+mkdir -p /run/php
+mkdir -p /var/log/php-fpm
 
-sleep 10
+wp --allow-root core download
+
+echo "downloaded wp-cli .... waiting for config"
 
 wp --allow-root config create --dbname=${DB_NAME} --dbuser=${DB_USER} --dbpass=${DB_PASSWORD} --dbhost=${DB_HOST}
+
+echo "created config for wp-cli .... waiting for php-fpm to start...."
 
 echo 'php-fpm starting ...'
 
 php-fpm7.4 -R -F -y /srcs/php-fpm.conf
 
 echo 'php-fpm failed'
-

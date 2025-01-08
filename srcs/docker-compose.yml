@@ -22,7 +22,8 @@ services:
       - wordpress-volume:/var/www/html
     depends_on:
       - wordpress
- 
+    networks:
+      - inception
 
   mariadb:
     env_file:
@@ -39,6 +40,9 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - inception
+
 
   wordpress:
     env_file:
@@ -52,4 +56,6 @@ services:
       - wordpress-volume:/var/www/html
     depends_on:
       - mariadb
+    networks:
+      - inception
 

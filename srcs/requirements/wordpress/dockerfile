@@ -7,26 +7,16 @@ RUN apt-get update && apt-get install -y \
     php-mysqli \
     php-pdo \
     curl \
-    netcat \
-    mariadb-client \
     && rm -rf /var/lib/apt/lists/*
-
 
 WORKDIR /var/www/html
 
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-chmod +x wp-cli.phar && \
-mv wp-cli.phar /usr/local/bin/wp && \
-mkdir -p /run/php && \
-mkdir -p /var/log/php-fpm
-
-RUN wp --allow-root core download
-
 RUN mkdir /srcs
-COPY ./tools/* /srcs/
+
+COPY ./tools/init.sh ./tools/php-fpm.conf  /srcs
+
 RUN chmod +x /srcs/init.sh
 
-
-# CMD [ "tail", "-f", "/dev/null" ]
-CMD [ "bash", "-c", "/srcs/init.sh;" ]
+CMD [ "tail", "-f", "/dev/null" ]
+#CMD [ "bash", "-c", "/srcs/init.sh;" ]
 
