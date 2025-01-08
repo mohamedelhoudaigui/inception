@@ -3,7 +3,7 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y \
     mariadb-server \
     mariadb-client \
-    iputils-ping \
+    netcat \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /run/mysqld \
     && chown -R mysql:mysql /run/mysqld \
@@ -21,4 +21,4 @@ RUN chmod +x /srcs/init.sh
 
 # CMD [ "tail", "-f", "/dev/null" ]
 
-CMD [ "/srcs/init.sh" ]
+CMD [ "bash", "-c", "/srcs/init.sh" ]

@@ -2,7 +2,7 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     nginx \
-    iputils-ping \
+    netcat \
     openssl \
     && rm -rf /var/lib/apt/lists/*
 
