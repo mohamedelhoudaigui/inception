@@ -14,9 +14,10 @@ WORKDIR /var/www/html
 RUN mkdir /srcs
 
 COPY ./tools/init.sh ./tools/php-fpm.conf  /srcs
+COPY ./tools/wp-config.php /var/www/html/
 
 RUN chmod +x /srcs/init.sh
 
-CMD [ "tail", "-f", "/dev/null" ]
-#CMD [ "bash", "-c", "/srcs/init.sh;" ]
+#CMD [ "tail", "-f", "/dev/null" ]
+CMD [ "bash", "-c", "/srcs/init.sh;" ]
 

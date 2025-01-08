@@ -10,10 +10,6 @@ wp --allow-root core download
 
 echo "downloaded wp-cli .... waiting for config"
 
-wp --allow-root config create --dbname=${DB_NAME} --dbuser=${DB_USER} --dbpass=${DB_PASSWORD} --dbhost=${DB_HOST}
-
-echo "created config for wp-cli .... waiting for php-fpm to start...."
-
 echo 'php-fpm starting ...'
 
 php-fpm7.4 -R -F -y /srcs/php-fpm.conf
