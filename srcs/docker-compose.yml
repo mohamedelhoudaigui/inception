@@ -31,8 +31,6 @@ services:
     container_name: mariadb
     build: ./requirements/mariadb
     image: mariadb
-    ports:
-      - 3333:3306
     volumes:
       - mariadb-volume:/var/lib/mysql
     environment:
@@ -50,8 +48,6 @@ services:
     container_name: wordpress
     build: ./requirements/wordpress
     image: wordpress
-    ports:
-      - 9999:9000
     volumes:
       - wordpress-volume:/var/www/html
     depends_on:

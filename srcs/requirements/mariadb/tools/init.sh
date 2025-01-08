@@ -1,6 +1,8 @@
 #!/bin/sh
 
-mysql
+mysqld &
+
+sleep 3
 
 # Check if database exists
 DB_EXISTS=$(mysql -e "SHOW DATABASES LIKE '${DB_NAME}';" | grep ${DB_NAME})
@@ -19,4 +21,3 @@ mysqladmin shutdown
 echo 'staring mariadb...'
 
 mysqld
-
