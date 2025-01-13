@@ -23,10 +23,10 @@ RUN openssl x509 -req -days 365 \
 -signkey /keys/private.key \
 -out /keys/cert.crt
 
-COPY ./tools/server.conf /etc/nginx/conf.d/my.conf
+COPY ./tools/server.conf /etc/nginx/conf.d/server.conf
 
 COPY ./tools/init.sh /keys
 RUN chmod +x /keys/init.sh
 
-# CMD [ "tail", "-f", "/dev/null" ]
+#CMD [ "tail", "-f", "/dev/null" ]
 CMD [ "bash", "-c", "/keys/init.sh;" ]
