@@ -4,15 +4,15 @@ PROJECT:= inception
 
 COMPOSE_PATH = ./srcs/docker-compose.yml
 
-BASE = docker-compose -p $(PROJECT) -f $(COMPOSE_PATH)
+BASE = docker compose -p $(PROJECT) -f $(COMPOSE_PATH)
 
 ############################################################
 
 up: down
-	$(BASE) up --build -d --remove-orphans
+	$(BASE) up --build -d
 
 build: down
-	$(BASE) build
+	$(BASE) build --no-cache
 
 down:
 	$(BASE) down --remove-orphans
@@ -25,6 +25,9 @@ ps:
 
 run:
 	@$(BASE) run -d "$(filter-out $@,$(MAKECMDGOALS))"
+
+fclean:
+	docker system prune -af --volumes
 
 ############################################################
 

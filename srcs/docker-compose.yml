@@ -1,13 +1,23 @@
+# /home/mel-houd/goinfre/test
 volumes:
   mariadb-volume:
-    name: "mariadb-volume"
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mel-houd/goinfre/test/mariadb
+      o: bind
 
   wordpress-volume:
-    name: "wordpress-volume"
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/mel-houd/goinfre/test/wordpress
+      o: bind
 
 networks:
   inception:
     name: inception
+    driver: bridge
 
 services:
   nginx:
@@ -17,7 +27,7 @@ services:
       dockerfile: dockerfile
     image: nginx
     ports:
-      - "8888:443"
+      - "9999:443"
     volumes:
       - wordpress-volume:/var/www/html
     depends_on:

@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y \
     php \
     php-fpm \
     php-mysqli \
+    php-cgi \
     php-pdo \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -13,10 +14,11 @@ WORKDIR /var/www/html
 
 RUN mkdir /srcs
 
-COPY ./tools/init.sh ./tools/php-fpm.conf  /srcs
+COPY ./tools/init.sh  /srcs
+#COPY ./tools/php-fpm.conf /srcs
 
 RUN chmod +x /srcs/init.sh
 
 #CMD [ "sleep", "infinity" ]
-CMD [ "bash", "-c", "/srcs/init.sh;" ]
+CMD ["/srcs/init.sh"]
 
