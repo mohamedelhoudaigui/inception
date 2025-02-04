@@ -1,24 +1,33 @@
 FROM debian:bullseye
-
-
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    php \
-    php-fpm \
-    php-mysqli \
-    php-cgi \
-    php-pdo \
+    curl && curl -sSL https://packages.sury.org/php/README.txt | bash -x && \
+    apt-get install -y php8.1 \
+    php8.1-fpm \
+    php8.1-mysql \
+    mariadb-client \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    redis-tools \
+    php8.1-redis \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/www/html/ && \
+    chown -R www-data:www-data /var/www/html
+
+RUN mkdir -p /run/php/ && chown -R www-data:www-data /run/php/
 
 WORKDIR /var/www/html
 
-RUN mkdir /srcs
+RUN sed -i "s|^listen = .*|listen = 0.0.0.0:9000|" /etc/php/8.1/fpm/pool.d/www.conf
 
-COPY ./tools/init.sh  /srcs
-#COPY ./tools/php-fpm.conf /srcs
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar \
+    && mv wp-cli.phar /usr/local/bin/wp
 
-RUN chmod +x /srcs/init.sh
+COPY ./tools/init.sh /init.sh
 
-#CMD [ "sleep", "infinity" ]
-CMD ["/srcs/init.sh"]
+RUN chmod +x /init.sh
 
+ENTRYPOINT [ "/init.sh" ]
+
+CMD ["php-fpm8.1", "--nodaemonize"]

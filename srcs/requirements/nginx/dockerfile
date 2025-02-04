@@ -2,11 +2,8 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     nginx \
-    netcat \
     openssl \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /var/www/html
 
 RUN mkdir /keys
 
@@ -23,10 +20,7 @@ RUN openssl x509 -req -days 365 \
 -signkey /keys/private.key \
 -out /keys/cert.crt
 
-COPY ./tools/config.conf /etc/nginx/sites-available/default
-
-COPY ./tools/init.sh /keys
-RUN chmod +x /keys/init.sh
+COPY ./tools/nginx.conf /etc/nginx/nginx.conf
 
 #CMD [ "tail", "-f", "/dev/null" ]
-CMD [ "bash", "-c", "/keys/init.sh;" ]
+CMD ["nginx", "-g", "daemon off;"]

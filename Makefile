@@ -26,7 +26,7 @@ ps:
 run:
 	@$(BASE) run -d "$(filter-out $@,$(MAKECMDGOALS))"
 
-fclean:
+fclean: down
 	docker system prune -af --volumes
 
 ############################################################

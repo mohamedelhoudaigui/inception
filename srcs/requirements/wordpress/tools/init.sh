@@ -1,27 +1,47 @@
-#!/bin/sh
+#!/bin/bash
 
-sleep 10
+MARKER_FILE='/var/www/html/.wp_installed'
 
-sed -i "s/listen = \/run\/php\/php7.4-fpm.sock/listen = 9000/" /etc/php/7.4/fpm/pool.d/www.conf
+# Wait for MariaDB to be ready
+until mysql -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" -e "SHOW DATABASES;" > /dev/null 2>&1; do
+    echo "Waiting for database connection..."
+    sleep 3
+done
 
-curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-chmod +x wp-cli.phar
-mv wp-cli.phar /usr/local/bin/wp
-mkdir -p /run/php
-mkdir -p /var/log/php-fpm
 
-echo "downloaded wp-cli .... waiting for config"
+if [ -f "$MARKER_FILE" ]; then
+    echo "wordpress already installed, Starting PHP-FPM..."
+    exec "$@"
+fi
 
-wp --allow-root core download
-wp --allow-root core config --dbhost=mariadb:3306 --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD"
-wp --allow-root core install --url="$DOMAIN_NAME" --title="$TITLE" --admin_user="$WP_ADMIN_USER" --admin_password="$WP_ADMIN_PASS" --admin_email="$WP_ADMIN_EMAIL"
-wp --allow-root user create "$WP_USER_NAME" "$WP_USER_EMAIL" --user_pass="$WP_USER_PASS" --role="$WP_USER_ROLE"
-# wp --allow-root theme install twentysixteen
-# wp --allow-root theme activate twentytwentyfour
+wp core download --allow-root
 
-echo "config ended..."
-echo 'php-fpm starting ...'
+wp config create \
+    --dbname="${DB_NAME}" \
+    --dbuser="${DB_USER}" \
+    --dbpass="${DB_PASSWORD}" \
+    --dbhost="${DB_HOST}" \
+    --allow-root
 
-php-fpm7.4 -F
+wp core install \
+    --url="${DOMAIN_NAME}" \
+    --title="${TITLE}" \
+    --admin_user="${WP_ADMIN_USER}" \
+    --admin_password="${WP_ADMIN_PASS}" \
+    --admin_email="${WP_ADMIN_EMAIL}" \
+    --skip-email \
+    --allow-root
 
-echo 'php-fpm failed'
+wp user create "${WP_USER_NAME}" "${WP_USER_EMAIL}" \
+    --role="${WP_USER_ROLE}" \
+    --user_pass="${WP_USER_PASS}" \
+    --allow-root
+
+
+wp theme install twentytwentyfour --allow-root
+wp theme activate twentytwentyfour --allow-root
+
+touch "$MARKER_FILE"
+
+echo "Starting PHP-FPM..."
+exec "$@"

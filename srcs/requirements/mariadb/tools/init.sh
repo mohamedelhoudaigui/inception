@@ -1,12 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-service mariadb start
+set -e
+
+mkdir -p /var/run/mysqld
+chown -R mysql:mysql /var/run/mysqld
+
+mysqld --user=mysql &
 sleep 5
 
-mariadb -e "CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;"
-mariadb -e "CREATE USER IF NOT EXISTS \`${DB_USER}\`@'%' IDENTIFIED BY '${DB_PASSWORD}';"
-mariadb -e "GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO \`${DB_USER}\`@'%';"
-mariadb -e "FLUSH PRIVILEGES;"
+if [ ! -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
+  mysql <<-EOSQL
+    CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;
+    CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+    GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'%';
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
+    FLUSH PRIVILEGES;
+EOSQL
+fi
 
 mysqladmin -u root -p$MYSQL_ROOT_PASSWORD shutdown
-mysqld_safe --port=3306 --bind-address=0.0.0.0 --datadir='/var/lib/mysql'
+exec mysqld --user=mysql

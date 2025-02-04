@@ -1,17 +1,17 @@
-# /home/mel-houd/goinfre/test
+
 volumes:
   mariadb-volume:
     driver: local
     driver_opts:
       type: none
-      device: /home/mel-houd/goinfre/test/mariadb
+      device: /Users/mel-houd/test/mariadb
       o: bind
 
   wordpress-volume:
     driver: local
     driver_opts:
       type: none
-      device: /home/mel-houd/goinfre/test/wordpress
+      device: /Users/mel-houd/test/wordpress
       o: bind
 
 networks:
@@ -25,24 +25,28 @@ services:
     build:
       context: ./requirements/nginx
       dockerfile: dockerfile
-    image: nginx
+    image: nginx:mel-houd
     ports:
-      - "9999:443"
+      - "443:443"
     volumes:
       - wordpress-volume:/var/www/html
     depends_on:
       - wordpress
     networks:
       - inception
+    restart: always
 
   mariadb:
     env_file:
       - .env
     container_name: mariadb
-    build: ./requirements/mariadb
-    image: mariadb
+    build:
+      context: ./requirements/mariadb
+      dockerfile: dockerfile
+    image: mariadb:mel-houd
     volumes:
       - mariadb-volume:/var/lib/mysql
+    restart: on-failure
     networks:
       - inception
 
@@ -52,11 +56,12 @@ services:
       - .env
     container_name: wordpress
     build: ./requirements/wordpress
-    image: wordpress
+    image: wordpress:mel-houd
     volumes:
       - wordpress-volume:/var/www/html
     depends_on:
       - mariadb
+    restart: on-failure
     networks:
       - inception
 
