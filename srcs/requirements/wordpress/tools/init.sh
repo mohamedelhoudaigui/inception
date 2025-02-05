@@ -1,18 +1,10 @@
 #!/bin/bash
 
-MARKER_FILE='/var/www/html/.wp_installed'
-
 # Wait for MariaDB to be ready
 until mysql -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASSWORD}" -e "SHOW DATABASES;" > /dev/null 2>&1; do
     echo "Waiting for database connection..."
     sleep 3
 done
-
-
-if [ -f "$MARKER_FILE" ]; then
-    echo "wordpress already installed, Starting PHP-FPM..."
-    exec "$@"
-fi
 
 wp core download --allow-root
 
@@ -37,11 +29,9 @@ wp user create "${WP_USER_NAME}" "${WP_USER_EMAIL}" \
     --user_pass="${WP_USER_PASS}" \
     --allow-root
 
-
 wp theme install twentytwentyfour --allow-root
 wp theme activate twentytwentyfour --allow-root
 
-touch "$MARKER_FILE"
-
 echo "Starting PHP-FPM..."
-exec "$@"
+
+exec php-fpm8.1 --nodaemonize

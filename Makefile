@@ -23,13 +23,8 @@ logs:
 ps:
 	$(BASE) ps
 
-run:
-	@$(BASE) run -d "$(filter-out $@,$(MAKECMDGOALS))"
-
 fclean: down
 	docker system prune -af --volumes
-
-############################################################
 
 it:
 	$(BASE) exec -it "$(filter-out $@,$(MAKECMDGOALS))" "/bin/bash"
