@@ -24,7 +24,11 @@ ps:
 	$(BASE) ps
 
 fclean: down
-	docker system prune -af --volumes
+	docker rm -f $(docker ps -aq) && \
+	docker rmi -f $(docker images -aq) && \
+	docker volume rm $(docker volume ls -q) && \
+	docker network rm $(docker network ls -q) && \
+	docker system prune -a --volumes
 
 it:
 	$(BASE) exec -it "$(filter-out $@,$(MAKECMDGOALS))" "/bin/bash"
