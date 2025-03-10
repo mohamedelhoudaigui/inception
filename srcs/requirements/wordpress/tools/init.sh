@@ -34,4 +34,4 @@ wp theme activate twentytwentyfour --allow-root
 
 echo "Starting PHP-FPM..."
 
-exec php-fpm8.1 --nodaemonize
+exec php-fpm7.4 --nodaemonize
