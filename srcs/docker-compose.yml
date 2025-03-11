@@ -3,14 +3,14 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /Home/mel-houd/data/mariadb
+      device: /Users/mel-houd/data/mariadb
       o: bind
 
   wordpress-volume:
     driver: local
     driver_opts:
       type: none
-      device: /Home/mel-houd/data/wordpress
+      device: /Users/mel-houd/data/wordpress
       o: bind
 
 networks:
