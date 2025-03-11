@@ -3,14 +3,14 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /Users/mel-houd/data/mariadb
+      device: /home/mel-houd/data/mariadb
       o: bind
 
   wordpress-volume:
     driver: local
     driver_opts:
       type: none
-      device: /Users/mel-houd/data/wordpress
+      device: /home/mel-houd/data/wordpress
       o: bind
 
 networks:
@@ -33,7 +33,7 @@ services:
       - inception
     depends_on:
       - wordpress
-    restart: on-failure
+    restart: always
 
   mariadb:
     env_file:
@@ -47,7 +47,7 @@ services:
       - mariadb-volume:/var/lib/mysql
     networks:
       - inception
-    restart: on-failure
+    restart: always
 
 
   wordpress:
@@ -64,5 +64,5 @@ services:
       - inception
     depends_on:
       - mariadb
-    restart: on-failure
+    restart: always
 
