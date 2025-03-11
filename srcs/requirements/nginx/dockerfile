@@ -2,19 +2,15 @@ FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
     nginx \
-    openssl \
-    && rm -rf /var/lib/apt/lists/*
+    openssl
 
 RUN mkdir /keys
 
-# gen private key
 RUN openssl genpkey -algorithm RSA -out /keys/private.key
 
-# gen CSR with subject information
 RUN openssl req -new -key /keys/private.key -out /keys/cert.csr \
 -subj "/C=/ST=/L=City/O=/OU=/CN="
 
-# gen self-signed certificate
 RUN openssl x509 -req -days 365 \
 -in /keys/cert.csr \
 -signkey /keys/private.key \

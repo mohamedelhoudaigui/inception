@@ -1,8 +1,7 @@
 FROM debian:bullseye
 
 RUN apt-get update && apt-get install -y \
-    mariadb-server && \
-    rm -rf /var/lib/apt/lists/*
+    mariadb-server
 
 COPY ./tools/my.cnf /etc/mysql/mariadb.conf.d/my.cnf
 
